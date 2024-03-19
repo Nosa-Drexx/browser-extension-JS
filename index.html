@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./switch-style.css" />
+
+    <title>Document</title>
+    <script
+      src="https://kit.fontawesome.com/686639dbbd.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <main>
+      <nav class="nav">
+        <div class="nav-toggle">
+          <span>Validateweb</span>
+          <!-- switch -->
+          <button onclick="handleSwitch()" class="switch-btn">
+            <div class="switch-btn-controller"></div>
+          </button>
+          <!-- end of switch -->
+        </div>
+        <div class="nav-security">
+          <i class="fa-solid fa-shield-virus"></i>
+
+          <span class="nav-security-text"> </span>
+        </div>
+      </nav>
+      <form class="url-form">
+        <label htmlFor="url" class="url-label-input">
+          <input
+            value=""
+            id="url"
+            type="url"
+            class="url-input"
+            placeholder="🔗 Autheticate URL"
+            required
+          />
+        </label>
+        <label htmlFor="submit" class="url-submit-label">
+          <button
+            type="submit"
+            value="Shorten"
+            id="submit"
+            class="url-submit-btn"
+          >
+            Scan
+          </button>
+        </label>
+      </form>
+      <div class="url-table-container">
+        <div class="url-loader-container"></div>
+        <div class="no-url-txt">
+          Perform a comprehensive URL analysis by scanning the provided link to
+          gain detailed insights.
+        </div>
+      </div>
+    </main>
+    <script>
+      window.addEventListener("hashchange", function () {
+        console.log("hello");
+      });
+      (() => {
+        let oldPushState = history.pushState;
+        history.pushState = function pushState() {
+          let ret = oldPushState.apply(this, arguments);
+          window.dispatchEvent(new Event("pushstate"));
+          window.dispatchEvent(new Event("locationchange"));
+          return ret;
+        };
+
+        let oldReplaceState = history.replaceState;
+        history.replaceState = function replaceState() {
+          let ret = oldReplaceState.apply(this, arguments);
+          window.dispatchEvent(new Event("replacestate"));
+          window.dispatchEvent(new Event("locationchange"));
+          return ret;
+        };
+
+        window.addEventListener("popstate", () => {
+          window.dispatchEvent(new Event("locationchange"));
+        });
+      })();
+    </script>
+    <script src="./script.js"></script>
+  </body>
+</html>
