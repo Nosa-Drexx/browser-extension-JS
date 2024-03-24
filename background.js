@@ -48,33 +48,6 @@ function isValidUrl(url) {
   return pattern.test(url);
 }
 
-const urlStatusColorGen = (urlData, urlDataColorCode) => {
-  if (urlData?.success) {
-    if (urlData?.unsafe) {
-      const result = { color: "red", meaning: "dangerous" };
-      urlDataColorCode = result;
-      return result;
-    } else if (urlData?.suspicious || urlData.risk_score > 50) {
-      const result = { color: "orange", meaning: "very suspicious" };
-      urlDataColorCode = result;
-      return result;
-    } else if (
-      urlData?.phishing ||
-      urlData?.redirected ||
-      urlData?.malware ||
-      urlData?.parking ||
-      urlData?.spamming
-    ) {
-      const result = { color: "yellow", meaning: "suspicious" };
-      urlDataColorCode = result;
-      return result;
-    } else {
-      const result = { color: "green", meaning: "safe" };
-      urlDataColorCode = result;
-      return result;
-    }
-  }
-};
 /*End of utility functions*/
 
 const updateExtensionIcon = (data) => {
@@ -88,13 +61,14 @@ const updateExtensionIcon = (data) => {
   console.log("udated extension icon with data", data);
 };
 
-console.log("hellos");
+console.log(`extension running`);
 const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
   if (
     chromeStorageData?.switchState &&
     tabData?.url &&
     isValidUrl(tabData.url)
   ) {
+    setTimeout(() => sendMessage("loading", { loading: true }), 500);
     await setChromeStorage(CHROME_STORAGE_KEY, {
       ...chromeStorageData,
       windowCurrentLocation: tabData.url,
@@ -109,17 +83,19 @@ const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
       baseURLResult: result,
       loading: false,
     });
+    setTimeout(() => sendMessage("loading", { loading: false }), 500);
+
     updateExtensionIcon(result);
   }
 };
 
 /*Chrome API functions */
 
-async function getCurrentTab() {
+async function getCurrentTab(runGetChromeStorage = true) {
   let queryOptions = { active: true, lastFocusedWindow: true };
   // `tab` will either be a `tabs.Tab` instance or `undefined`.
   let [tab] = await chrome.tabs.query(queryOptions);
-  getChromeStorageData(tab, handleURLORTabUpdate);
+  if (runGetChromeStorage) getChromeStorageData(tab, handleURLORTabUpdate);
 
   return tab;
 }
@@ -159,10 +135,23 @@ const setChromeStorage = async (key, value) => {
   });
 };
 
-// const sendMessage = (action, data) => {
-//   chrome.tab.sendMessage({ action: action, data: data });
-// };
+const sendMessage = (action, data) => {
+  chrome.runtime.sendMessage({ action: action, data: data });
+};
+
+const monitorChromeStorage = () => {
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    // console.log(changes, namespace, "changes and namespace");
+    const oldVaue = changes[CHROME_STORAGE_KEY].oldValue;
+    const newValue = changes[CHROME_STORAGE_KEY].newValue;
+    if (oldVaue.switchState === false && newValue.switchState === true) {
+      getCurrentTab();
+    }
+  });
+};
+
 onTabURLChange();
 
 getCurrentTab();
 monitorTab();
+monitorChromeStorage();

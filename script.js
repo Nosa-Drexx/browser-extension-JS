@@ -70,7 +70,7 @@ function storeData(key, value, setInChromeStorage = true, cb = () => {}) {
   cb();
   if (setInChromeStorage) {
     chrome.storage.local.set({ [key]: value }, () => {
-      console.log("data stored in chrome stoarge");
+      // console.log("data stored in chrome stoarge");
     });
   }
 }
@@ -176,13 +176,8 @@ const globalVariables = dataStore.createProxy();
 if (typeof retrievePreData?.switchState !== "boolean") {
   storeData(CHROME_STORAGE_KEY, defaultGlobalVariables);
 }
-console.log(
-  globalVariables,
-  globalVariables?.urlData,
-  globalVariables?.urlDataColorCode,
-  "globalVariables",
-  retrievePreData
-);
+
+let extensionIntiallyChecked = globalVariables?.switchState ? true : false;
 
 const fontAwesomeShieldIcon = document.querySelector(".fa-shield-virus");
 const securityTxt = document.querySelector(".nav-security-text");
@@ -213,21 +208,6 @@ const updateHTML = (globalVariables) => {
   }
 };
 
-async function checkStatus() {
-  const result = await verifyWebsite(
-    globalVariables?.loading,
-    window?.location?.origin,
-    updateHTML
-  );
-  globalVariables.baseURLResult = result;
-  console.log(result, "result");
-  updateHTML(globalVariables);
-}
-
-// if (globalVariables?.switchState) {
-//   console.log(window?.location?.origin, globalVariables?.windowCurrentLocation);
-//   checkStatus();
-// }
 updateHTML(globalVariables);
 
 /*swich states and functions */
@@ -300,39 +280,13 @@ const handleSwitch = () => {
     switchBtn.style.background = toggleOffbg;
     switchController.style.transform = `translateX(${animationDetails.left})`;
   }
-
-  updateHTML(globalVariables);
-
-  // if (
-  //   globalVariables.windowCurrentLocation !== window?.location?.origin &&
-  //   globalVariables.switchState
-  // ) {
-  //   // checkStatus();
-  //   // globalVariables.windowCurrentLocation = window.location.origin;
-  // }
+  if (!globalVariables.switchState) {
+    updateHTML(globalVariables);
+  }
 };
 
 switchBtn.addEventListener("click", handleSwitch);
 /*End of switch */
-
-// window.navigation.addEventListener("navigate", (event) => {
-//   // Check if the origin has changed
-//   //   if (
-//   //     window.location.origin !== globalVariables.windowCurrentLocation &&
-//   //     globalVariables.switchState
-//   //   ) {
-//   // Your code to handle the change in origin here
-//   console.log("Origin has changed!");
-//   if (globalVariables.windowCurrentLocation !== window?.location?.origin) {
-//     checkStatus();
-//   }
-//   globalVariables.windowCurrentLocation = window.location.origin;
-//   // Update the initial origin for future comparisons
-// });
-
-// window.addEventListener("locationchange", function () {
-//   console.log("location changed!");
-// });
 
 /*Input form  and table layout*/
 const urlInput = document.querySelector(".url-input");
@@ -466,12 +420,18 @@ form.addEventListener("submit", function (event) {
 });
 // });
 
+const handleChromeMessage = async (message) => {
+  const newData = await retrieveData(CHROME_STORAGE_KEY);
+
+  globalVariables.loading = newData.loading;
+  if (!message.data.loading)
+    globalVariables.baseURLResult = newData.baseURLResult;
+  updateHTML(globalVariables);
+};
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("'heoo");
-  if (message.action === "tabChange" || message.action === "urlChange") {
-    console.log("tab or url change");
-  }
-  if (message.data) {
-    console.log("message received:", message.data);
+  // console.log("'heoo");
+  if (message.action === "loading") {
+    handleChromeMessage(message);
   }
 });
