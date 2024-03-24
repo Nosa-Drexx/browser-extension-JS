@@ -208,6 +208,10 @@ const updateHTML = (globalVariables) => {
   }
 };
 
+// console.log(globalVariables);
+if (!globalVariables.switchState) {
+  globalVariables.loading = false;
+}
 updateHTML(globalVariables);
 
 /*swich states and functions */
@@ -282,6 +286,7 @@ const handleSwitch = () => {
   }
   if (!globalVariables.switchState) {
     updateHTML(globalVariables);
+    globalVariables.loading = false;
   }
 };
 
@@ -430,7 +435,7 @@ const handleChromeMessage = async (message) => {
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // console.log("'heoo");
+  console.log("'heoo");
   if (message.action === "loading") {
     handleChromeMessage(message);
   }

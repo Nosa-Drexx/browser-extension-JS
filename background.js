@@ -58,6 +58,12 @@ const updateExtensionIcon = (data) => {
   // : !globalVariables.baseURLResult?.unsafe
   // ? "green"
   // : "red";
+  console.log(data);
+  if (!data.unsafe) {
+    setBrowserIconUsingPath("/images/icon-128.png"); // good url icon
+  } else {
+    setBrowserIconUsingPath("/images/demo-bad-128.png"); // bad url icon
+  }
   console.log("udated extension icon with data", data);
 };
 
@@ -69,6 +75,9 @@ const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
     isValidUrl(tabData.url)
   ) {
     setTimeout(() => sendMessage("loading", { loading: true }), 500);
+    // console.log("before seting Icon");
+    setBrowserIconUsingPath("/images/demo-good-128.png"); //loading icon
+    // console.log("tabData.url sending request", tabData.url);
     await setChromeStorage(CHROME_STORAGE_KEY, {
       ...chromeStorageData,
       windowCurrentLocation: tabData.url,
@@ -78,6 +87,7 @@ const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
       globalServiceWorkerVariable.loading,
       tabData.url
     );
+    // console.log("result", result);
     await setChromeStorage(CHROME_STORAGE_KEY, {
       ...chromeStorageData,
       baseURLResult: result,
@@ -144,11 +154,25 @@ const monitorChromeStorage = () => {
     // console.log(changes, namespace, "changes and namespace");
     const oldVaue = changes[CHROME_STORAGE_KEY].oldValue;
     const newValue = changes[CHROME_STORAGE_KEY].newValue;
+    if (newValue.switchState === false) {
+      /*change browser icon to off state */
+    }
     if (oldVaue.switchState === false && newValue.switchState === true) {
       getCurrentTab();
     }
   });
 };
+
+const setBrowserIconUsingPath = (
+  path = "/images/demo-good-128.png",
+  cb = () => {}
+) => {
+  chrome.action.setIcon({ path: path }, () => {
+    cb();
+  });
+};
+
+/*End of Chrome API functions */
 
 onTabURLChange();
 
