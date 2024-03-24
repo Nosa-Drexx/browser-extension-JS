@@ -60,7 +60,7 @@ const updateExtensionIcon = (data) => {
   // : "red";
   console.log(data);
   if (!data.unsafe) {
-    setBrowserIconUsingPath("/images/icon-128.png"); // good url icon
+    setBrowserIconUsingPath("/images/demo-bad-128.png"); // good url icon
   } else {
     setBrowserIconUsingPath("/images/demo-bad-128.png"); // bad url icon
   }
@@ -174,8 +174,21 @@ const setBrowserIconUsingPath = (
 
 /*End of Chrome API functions */
 
+getChromeStorageData("", (intails, data) => {
+  if (!data?.switchState) {
+    setBrowserIconUsingPath("/images/demo-bad-128.png"); // set off image
+  }
+});
+
 onTabURLChange();
 
 getCurrentTab();
 monitorTab();
 monitorChromeStorage();
+
+//Icons to create
+//Default
+//good
+//bad
+//off
+//loading

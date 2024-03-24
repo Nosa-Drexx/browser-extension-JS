@@ -435,7 +435,7 @@ const handleChromeMessage = async (message) => {
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("'heoo");
+  // console.log("'heoo");
   if (message.action === "loading") {
     handleChromeMessage(message);
   }
