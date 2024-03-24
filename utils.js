@@ -1,3 +1,5 @@
+/*Utillity fucntions*/
+
 const BASE_API = "https://www.ipqualityscore.com/api/json/url";
 const API_KEY = "r9VFNcPwKR4sLdQyAeCiIYrvRrWqoOgs";
 
@@ -8,6 +10,7 @@ const MYAPIKEY = API_KEY;
 export const verifyWebsite = async (
   loading,
   url = "https://codebox-xml.netlify.app/",
+  beforeRequest = () => {},
   vars = { strictness: REQUESTSTRICTNESS }
 ) => {
   // console.log("we ran");
@@ -17,28 +20,33 @@ export const verifyWebsite = async (
     Object.keys(vars).length > 0 ? `?${new URLSearchParams(vars)}` : "";
 
   try {
-    if (loading) loading = true;
+    if (typeof loading === "boolean") loading = true;
+    beforeRequest(loading);
     const response = await fetch(apiUrl + queryString);
     const result = await response.json();
 
     // console.log(result);
     // console.log("-------------------------");
     // console.log(JSON.stringify(result, null, 2));
-    if (loading) loading = false;
+    if (typeof loading === "boolean") loading = false;
     return result;
   } catch (error) {
-    if (loading) loading = false;
+    if (typeof loading === "boolean") loading = false;
     console.error("error", error);
     return error;
   }
 };
 
-export const urlStatusColorGen = (urlData) => {
+export const urlStatusColorGen = (urlData, urlDataColorCode) => {
   if (urlData?.success) {
     if (urlData?.unsafe) {
-      return { color: "red", meaning: "dangerous" };
+      const result = { color: "red", meaning: "dangerous" };
+      urlDataColorCode = result;
+      return result;
     } else if (urlData?.suspicious || urlData.risk_score > 50) {
-      return { color: "orange", meaning: "very suspicious" };
+      const result = { color: "orange", meaning: "very suspicious" };
+      urlDataColorCode = result;
+      return result;
     } else if (
       urlData?.phishing ||
       urlData?.redirected ||
@@ -46,9 +54,14 @@ export const urlStatusColorGen = (urlData) => {
       urlData?.parking ||
       urlData?.spamming
     ) {
-      return { color: "yellow", meaning: "suspicious" };
+      const result = { color: "yellow", meaning: "suspicious" };
+      urlDataColorCode = result;
+      return result;
     } else {
-      return { color: "green", meaning: "safe" };
+      const result = { color: "green", meaning: "safe" };
+      urlDataColorCode = result;
+      return result;
     }
   }
 };
+/*End of utility functions*/

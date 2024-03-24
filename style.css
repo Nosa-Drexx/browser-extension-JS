@@ -8,6 +8,10 @@
   box-sizing: border-box;
 }
 
+main {
+  min-width: 300px;
+}
+
 .switch-btn-controller {
   display: flex;
   justify-content: center;

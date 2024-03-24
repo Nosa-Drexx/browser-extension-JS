@@ -1,5 +1,5 @@
 /*Utillity fucntions*/
-
+const CHROME_STORAGE_KEY = "url-extension-states";
 const BASE_API = "https://www.ipqualityscore.com/api/json/url";
 const API_KEY = "r9VFNcPwKR4sLdQyAeCiIYrvRrWqoOgs";
 
@@ -64,6 +64,42 @@ const urlStatusColorGen = (urlData, urlDataColorCode) => {
     }
   }
 };
+
+function storeData(key, value, setInChromeStorage = true, cb = () => {}) {
+  window.localStorage.setItem(key, JSON.stringify(value));
+  cb();
+  if (setInChromeStorage) {
+    chrome.storage.local.set({ [key]: value }, () => {
+      console.log("data stored in chrome stoarge");
+    });
+  }
+}
+
+async function retrieveData(key, storeIn = "") {
+  await new Promise((resolve, reject) => {
+    chrome.storage.local.get(CHROME_STORAGE_KEY, (data) => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          `Error retrieving data from local storage: ${chrome.runtime.lastError}`
+        );
+        reject(chrome.runtime.lastError);
+      } else {
+        if (Object.keys(data).length && data[CHROME_STORAGE_KEY]) {
+          storeData(
+            CHROME_STORAGE_KEY,
+            data[CHROME_STORAGE_KEY],
+            false,
+            resolve
+          ); // storeed in local storage  so it can be accessible
+        }
+      }
+    });
+  });
+  const data = window.localStorage.getItem(key);
+  const parsedData = JSON.parse(data);
+  storeIn = parsedData;
+  return parsedData;
+}
 /*End of utility functions*/
 
 const localStorage = window.localStorage.getItem("browserUrlAuthenticator");
@@ -79,7 +115,44 @@ const dataToCheck = [
   { name: "Spamming safe", apiKey: "spamming" },
 ];
 
-const globalVariables = {
+class DataStore {
+  constructor(initialValue) {
+    this.data = initialValue;
+    this.observers = new Map(); // Use Map for efficient key lookups
+  }
+
+  get(key) {
+    return this.data[key];
+  }
+
+  set(key, newValue) {
+    const oldValue = this.data[key];
+    if (oldValue !== newValue) {
+      this.data[key] = newValue;
+      this.updateChromeStorage(key, newValue);
+    }
+  }
+
+  updateChromeStorage = (key, newValue) => {
+    storeData(CHROME_STORAGE_KEY, { ...this.data, [key]: newValue });
+    // console.log(key, newValue, "new update");
+  };
+
+  // Create a proxy object to intercept property access
+  createProxy() {
+    return new Proxy(this, {
+      get: (target, propKey) => {
+        return target.get(propKey);
+      },
+      set: (target, propKey, value) => {
+        target.set(propKey, value);
+        return true; // Indicate successful set operation
+      },
+    });
+  }
+}
+
+const defaultGlobalVariables = {
   switchState: extensionState?.checked || false,
   windowCurrentLocation: null,
   baseURLResult: null,
@@ -90,13 +163,36 @@ const globalVariables = {
   urlDataColorCode: null,
 };
 
+let retrievePreData = await retrieveData(CHROME_STORAGE_KEY);
+
+const dataStore = new DataStore(
+  typeof retrievePreData?.switchState === "boolean"
+    ? { ...retrievePreData }
+    : { ...defaultGlobalVariables }
+);
+
+const globalVariables = dataStore.createProxy();
+
+if (typeof retrievePreData?.switchState !== "boolean") {
+  storeData(CHROME_STORAGE_KEY, defaultGlobalVariables);
+}
+console.log(
+  globalVariables,
+  globalVariables?.urlData,
+  globalVariables?.urlDataColorCode,
+  "globalVariables",
+  retrievePreData
+);
+
 const fontAwesomeShieldIcon = document.querySelector(".fa-shield-virus");
 const securityTxt = document.querySelector(".nav-security-text");
 
 const updateHTML = (globalVariables) => {
   if (fontAwesomeShieldIcon) {
     fontAwesomeShieldIcon.style.color =
-      globalVariables.loading || !globalVariables.baseURLResult
+      globalVariables.loading ||
+      !globalVariables.baseURLResult ||
+      !globalVariables.switchState
         ? "#7e7e81"
         : !globalVariables.baseURLResult?.success
         ? "red"
@@ -107,7 +203,7 @@ const updateHTML = (globalVariables) => {
   if (securityTxt) {
     securityTxt.innerHTML = globalVariables.loading
       ? "checking..."
-      : !globalVariables.baseURLResult
+      : !globalVariables.baseURLResult || !globalVariables.switchState
       ? "off"
       : !globalVariables.baseURLResult?.success
       ? "suspicious"
@@ -128,9 +224,10 @@ async function checkStatus() {
   updateHTML(globalVariables);
 }
 
-if (globalVariables?.switchState) {
-  checkStatus();
-}
+// if (globalVariables?.switchState) {
+//   console.log(window?.location?.origin, globalVariables?.windowCurrentLocation);
+//   checkStatus();
+// }
 updateHTML(globalVariables);
 
 /*swich states and functions */
@@ -204,32 +301,38 @@ const handleSwitch = () => {
     switchController.style.transform = `translateX(${animationDetails.left})`;
   }
 
-  if (
-    globalVariables.windowCurrentLocation !== window?.location?.origin &&
-    globalVariables.switchState
-  ) {
-    checkStatus();
-    globalVariables.windowCurrentLocation = window.location.origin;
-  }
+  updateHTML(globalVariables);
+
+  // if (
+  //   globalVariables.windowCurrentLocation !== window?.location?.origin &&
+  //   globalVariables.switchState
+  // ) {
+  //   // checkStatus();
+  //   // globalVariables.windowCurrentLocation = window.location.origin;
+  // }
 };
+
+switchBtn.addEventListener("click", handleSwitch);
 /*End of switch */
 
-window.navigation.addEventListener("navigate", (event) => {
-  // Check if the origin has changed
-  //   if (
-  //     window.location.origin !== globalVariables.windowCurrentLocation &&
-  //     globalVariables.switchState
-  //   ) {
-  // Your code to handle the change in origin here
-  console.log("Origin has changed!");
-  checkStatus();
-  // Update the initial origin for future comparisons
-  globalVariables.windowCurrentLocation = window.location.origin;
-});
+// window.navigation.addEventListener("navigate", (event) => {
+//   // Check if the origin has changed
+//   //   if (
+//   //     window.location.origin !== globalVariables.windowCurrentLocation &&
+//   //     globalVariables.switchState
+//   //   ) {
+//   // Your code to handle the change in origin here
+//   console.log("Origin has changed!");
+//   if (globalVariables.windowCurrentLocation !== window?.location?.origin) {
+//     checkStatus();
+//   }
+//   globalVariables.windowCurrentLocation = window.location.origin;
+//   // Update the initial origin for future comparisons
+// });
 
-window.addEventListener("locationchange", function () {
-  console.log("location changed!");
-});
+// window.addEventListener("locationchange", function () {
+//   console.log("location changed!");
+// });
 
 /*Input form  and table layout*/
 const urlInput = document.querySelector(".url-input");
@@ -261,8 +364,8 @@ const updateHTMLOnSearch = (loading) => {
 };
 
 const updatePageTableOnSearchResult = () => {
+  tableContainer.innerHTML = ""; //revert on new search
   if (globalVariables.urlData?.success) {
-    tableContainer.innerHTML = ""; //revert on new search
     tableContainer.insertAdjacentHTML(
       "beforeend",
       `<div>
@@ -310,8 +413,15 @@ const updatePageTableOnSearchResult = () => {
 
       tableBody.appendChild(tr);
     });
-    tableBody.appendChild(`<td class="table-key">Risk Score</td>
-  <td class="table-status">${globalVariables.urlData?.risk_score}</td>`);
+    const riskScoreTD = document.createElement("td");
+    const riskScoreValue = document.createElement("td");
+    riskScoreTD.className = "table-key";
+    riskScoreValue.className = "table-status";
+    riskScoreTD.innerHTML = "Risk Score";
+    riskScoreValue.innerHTML = globalVariables.urlData?.risk_score;
+
+    tableBody.appendChild(riskScoreTD);
+    tableBody.appendChild(riskScoreValue);
   } else {
     tableContainer.insertAdjacentHTML(
       "beforeend",
@@ -321,6 +431,10 @@ const updatePageTableOnSearchResult = () => {
     );
   }
 };
+
+if (globalVariables?.urlData && globalVariables?.urlDataColorCode) {
+  updatePageTableOnSearchResult();
+}
 
 const handleSubmit = async (e) => {
   const result = await verifyWebsite(
@@ -336,6 +450,7 @@ const handleSubmit = async (e) => {
     globalVariables.urlDataColorCode
   );
   globalVariables.urlDataColorCode = colorCode;
+
   updatePageTableOnSearchResult();
   globalVariables.url = "";
   urlInput.value = globalVariables?.url;
@@ -350,3 +465,13 @@ form.addEventListener("submit", function (event) {
   handleSubmit();
 });
 // });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("'heoo");
+  if (message.action === "tabChange" || message.action === "urlChange") {
+    console.log("tab or url change");
+  }
+  if (message.data) {
+    console.log("message received:", message.data);
+  }
+});

@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Phising Website Detector New",
+  "version": "1.0.0",
+  "description": "An extesion that helps to detect phising and mailicious website",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "host_permissions": [
+    "https://www.ipqualityscore.com/api/json/url",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "permissions": ["storage", "tabs"],
+  "background": { "service_worker": "background.js" },
+  "background.persistent": true,
+  "icons": {
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  }
+}

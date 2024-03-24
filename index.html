@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./switch-style.css" />
+    <link rel="stylesheet" href="./css/all.css" />
 
     <title>Document</title>
-    <script
-      src="https://kit.fontawesome.com/686639dbbd.js"
-      crossorigin="anonymous"
-    ></script>
   </head>
   <body>
     <main>
@@ -18,7 +15,7 @@
         <div class="nav-toggle">
           <span>Validateweb</span>
           <!-- switch -->
-          <button onclick="handleSwitch()" class="switch-btn">
+          <button class="switch-btn">
             <div class="switch-btn-controller"></div>
           </button>
           <!-- end of switch -->
@@ -59,32 +56,7 @@
         </div>
       </div>
     </main>
-    <script>
-      window.addEventListener("hashchange", function () {
-        console.log("hello");
-      });
-      (() => {
-        let oldPushState = history.pushState;
-        history.pushState = function pushState() {
-          let ret = oldPushState.apply(this, arguments);
-          window.dispatchEvent(new Event("pushstate"));
-          window.dispatchEvent(new Event("locationchange"));
-          return ret;
-        };
 
-        let oldReplaceState = history.replaceState;
-        history.replaceState = function replaceState() {
-          let ret = oldReplaceState.apply(this, arguments);
-          window.dispatchEvent(new Event("replacestate"));
-          window.dispatchEvent(new Event("locationchange"));
-          return ret;
-        };
-
-        window.addEventListener("popstate", () => {
-          window.dispatchEvent(new Event("locationchange"));
-        });
-      })();
-    </script>
-    <script src="./script.js"></script>
+    <script src="./script.js" type="module"></script>
   </body>
 </html>
