@@ -415,16 +415,15 @@ const handleSubmit = async (e) => {
   urlInput.value = globalVariables?.url;
 };
 
-// document.addEventListener("DOMContentLoaded", function () {
-//   // Select the form element
-//   // Add submit event listener to the form
 form.addEventListener("submit", function (event) {
   // Prevent the default form submission behavior
   event.preventDefault();
   handleSubmit();
 });
-// });
 
+/*End of input form and table layout */
+
+/*Chrome API functions */
 const handleChromeMessage = async (message) => {
   const newData = await retrieveData(CHROME_STORAGE_KEY);
 

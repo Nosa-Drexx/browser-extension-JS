@@ -51,23 +51,15 @@ function isValidUrl(url) {
 /*End of utility functions*/
 
 const updateExtensionIcon = (data) => {
-  // globalVariables.loading || !globalVariables.baseURLResult
-  // ? "#7e7e81"
-  // : !globalVariables.baseURLResult?.success
-  // ? "red"
-  // : !globalVariables.baseURLResult?.unsafe
-  // ? "green"
-  // : "red";
-  console.log(data);
   if (!data.unsafe) {
-    setBrowserIconUsingPath("/images/demo-bad-128.png"); // good url icon
+    setBrowserIconUsingPath("/images/icon-128-safe.png"); // good url icon
   } else {
-    setBrowserIconUsingPath("/images/demo-bad-128.png"); // bad url icon
+    setBrowserIconUsingPath("/images/icon-128-unsafe.png"); // bad url icon
   }
-  console.log("udated extension icon with data", data);
+  // console.log("udated extension icon with data", data);
 };
 
-console.log(`extension running`);
+/*Function utiliziing chrome API functions */
 const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
   if (
     chromeStorageData?.switchState &&
@@ -76,7 +68,7 @@ const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
   ) {
     setTimeout(() => sendMessage("loading", { loading: true }), 500);
     // console.log("before seting Icon");
-    setBrowserIconUsingPath("/images/demo-good-128.png"); //loading icon
+    setBrowserIconUsingPath("/images/icon-128-loading.png"); //loading icon
     // console.log("tabData.url sending request", tabData.url);
     await setChromeStorage(CHROME_STORAGE_KEY, {
       ...chromeStorageData,
@@ -98,6 +90,8 @@ const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
     updateExtensionIcon(result);
   }
 };
+
+/*End of function utiliziing chrome API functions below */
 
 /*Chrome API functions */
 
@@ -156,6 +150,14 @@ const monitorChromeStorage = () => {
     const newValue = changes[CHROME_STORAGE_KEY].newValue;
     if (newValue.switchState === false) {
       /*change browser icon to off state */
+      setBrowserIconUsingPath("/images/icon-128-off.png"); // set off image
+    }
+    if (
+      newValue.switchState === true &&
+      !isValidUrl(oldVaue.windowCurrentLocation)
+    ) {
+      /*change browser icon to default state */
+      setBrowserIconUsingPath("/images/icon-128-default.png"); // set default image
     }
     if (oldVaue.switchState === false && newValue.switchState === true) {
       getCurrentTab();
@@ -164,7 +166,7 @@ const monitorChromeStorage = () => {
 };
 
 const setBrowserIconUsingPath = (
-  path = "/images/demo-good-128.png",
+  path = "/images/icon-128-default.png",
   cb = () => {}
 ) => {
   chrome.action.setIcon({ path: path }, () => {
@@ -172,23 +174,19 @@ const setBrowserIconUsingPath = (
   });
 };
 
-/*End of Chrome API functions */
-
 getChromeStorageData("", (intails, data) => {
   if (!data?.switchState) {
-    setBrowserIconUsingPath("/images/demo-bad-128.png"); // set off image
+    setBrowserIconUsingPath("/images/icon-128-off.png"); // set off image
   }
 });
+
+/*End of Chrome API functions */
+
+/*funtion calls and intialization */
+console.log(`extension running`);
 
 onTabURLChange();
 
 getCurrentTab();
 monitorTab();
 monitorChromeStorage();
-
-//Icons to create
-//Default
-//good
-//bad
-//off
-//loading
