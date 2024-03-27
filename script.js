@@ -181,6 +181,7 @@ let extensionIntiallyChecked = globalVariables?.switchState ? true : false;
 
 const fontAwesomeShieldIcon = document.querySelector(".fa-shield-virus");
 const securityTxt = document.querySelector(".nav-security-text");
+const currentURL = document.querySelector(".current-url");
 
 const updateHTML = (globalVariables) => {
   if (fontAwesomeShieldIcon) {
@@ -205,6 +206,10 @@ const updateHTML = (globalVariables) => {
       : !globalVariables.baseURLResult?.unsafe
       ? "safe"
       : "suspicious";
+  }
+  if (currentURL) {
+    currentURL.innerHTML =
+      globalVariables?.baseURLResult?.final_url || "no-url";
   }
 };
 
@@ -304,7 +309,7 @@ const noURLTxtBox = document.querySelector(".no-url-txt");
 const urlInputChange = (e) => {
   globalVariables.url = e.target.value;
 };
-
+urlInput.value = globalVariables?.urlData?.final_url || "";
 urlInput.onchange = urlInputChange;
 
 const updateHTMLOnSearch = (loading) => {

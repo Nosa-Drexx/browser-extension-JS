@@ -48,6 +48,30 @@ function isValidUrl(url) {
   return pattern.test(url);
 }
 
+const urlStatusColorGen = (urlData, urlDataColorCode) => {
+  if (urlData?.success) {
+    if (urlData?.unsafe) {
+      const result = { color: "red", meaning: "dangerous" };
+      return result;
+    } else if (urlData?.suspicious || urlData.risk_score > 50) {
+      const result = { color: "orange", meaning: "very suspicious" };
+      return result;
+    } else if (
+      urlData?.phishing ||
+      urlData?.redirected ||
+      urlData?.malware ||
+      urlData?.parking ||
+      urlData?.spamming
+    ) {
+      const result = { color: "#ffcc00", meaning: "suspicious" };
+      return result;
+    } else {
+      const result = { color: "green", meaning: "safe" };
+      return result;
+    }
+  }
+};
+
 /*End of utility functions*/
 
 const updateExtensionIcon = (data) => {
@@ -74,16 +98,22 @@ const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
       ...chromeStorageData,
       windowCurrentLocation: tabData.url,
       loading: true,
+      isLoadingSearchResult: true,
     });
     const result = await verifyWebsite(
       globalServiceWorkerVariable.loading,
       tabData.url
     );
+
     // console.log("result", result);
+    const colorCode = urlStatusColorGen(result);
     await setChromeStorage(CHROME_STORAGE_KEY, {
       ...chromeStorageData,
       baseURLResult: result,
+      urlData: result,
+      urlDataColorCode: colorCode,
       loading: false,
+      isLoadingSearchResult: false,
     });
     setTimeout(() => sendMessage("loading", { loading: false }), 500);
 

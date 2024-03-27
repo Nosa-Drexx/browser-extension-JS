@@ -4,6 +4,9 @@
   --progress-bar-width: 200px;
   --progress-bar-height: 200px;
   --font-size: 2rem;
+  --bg: #ffffff;
+  --color: #111111;
+  --grayColor: #7e7e81;
 }
 
 *,
@@ -12,15 +15,28 @@
   box-sizing: border-box;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --progress-bar-width: 200px;
+    --progress-bar-height: 200px;
+    --font-size: 2rem;
+    --color: #ffffff;
+    --bg: #111111;
+    --grayColor: #fefefe;
+  }
+}
+
 body {
-  background-color: transparent;
+  background-color: var(--bg);
+  color: var(--color);
   box-sizing: border-box;
   padding: 0px;
   margin: 0px;
 }
 
 main {
-  background-color: #fff;
+  min-width: 348px;
+  background: transparent;
   border-radius: 10px;
   padding: 10px;
 }
@@ -52,10 +68,6 @@ body::-webkit-scrollbar-thumb {
   box-sizing: border-box;
 }
 
-main {
-  min-width: 300px;
-}
-
 .switch-btn-controller {
   display: flex;
   justify-content: center;
@@ -75,20 +87,42 @@ main {
 }
 
 /*nav styles*/
-.nav {
-  color: red;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  gap: 4rem;
+nav {
   border-bottom: 1px solid #7e7e81;
   padding-bottom: 0.5rem;
   border-radius: 0 0 0.5rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: column nowrap;
+  gap: 12px;
+}
+.nav {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  width: 100%;
+  /* gap: 4rem; */
+  align-items: center;
+}
+
+.current-url {
+  margin: 0 auto;
+  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .nav-toggle {
   display: flex;
   flex-flow: column nowrap;
+}
+
+.extension-logo {
+  width: 150px;
+  height: auto;
+  object-fit: fill;
 }
 
 .nav-security {
@@ -100,7 +134,7 @@ main {
 
 .nav-security-text {
   font-weight: bold;
-  color: #7e7e81;
+  color: var(--grayColor);
   font-style: italic;
   text-align: center;
 }
@@ -136,7 +170,7 @@ table,
 tr,
 td {
   font-size: 1.1rem;
-  border: 1px solid black;
+  border: 1px solid var(--color);
   border-collapse: collapse;
 }
 
@@ -192,9 +226,11 @@ td {
 .url-input:active {
   border: unset;
 }
-
+.url-submit-label {
+  margin-right: 0.3rem;
+}
 .url-submit-label .url-submit-btn {
-  box-shadow: 3px 7px 15px rgb(157, 118, 231);
+  box-shadow: 3px 3px 15px rgb(157, 118, 231);
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
@@ -274,7 +310,7 @@ td {
 .percentage {
   position: relative;
   font-size: var(--font-size);
-  color: rgb(0, 0, 0, 0.8);
+  color: var(--color);
 }
 
 @media screen and (max-width: 800px) {
