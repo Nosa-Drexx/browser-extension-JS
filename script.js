@@ -54,7 +54,7 @@ const urlStatusColorGen = (urlData, urlDataColorCode) => {
       urlData?.parking ||
       urlData?.spamming
     ) {
-      const result = { color: "yellow", meaning: "suspicious" };
+      const result = { color: "#ffcc00", meaning: "suspicious" };
       urlDataColorCode = result;
       return result;
     } else {
@@ -312,14 +312,64 @@ const updateHTMLOnSearch = (loading) => {
     if (loading) {
       urlInputSubmitBtn.innerHTML = `<i class="fa-solid fa-spinner url-spinner"></i>`;
       urlInputSubmitBtn.disabled = true;
-      loadingBox.innerHTML = "Loading...";
+      tableContainer.innerHTML = `<span class="loader"></span>`;
       noURLTxtBox.style.display = "none";
     } else {
       urlInputSubmitBtn.innerHTML = "Scan";
       urlInputSubmitBtn.disabled = false;
-      loadingBox.innerHTML = "";
+      tableContainer.innerHTML = "";
     }
   }
+};
+
+const circularProgressColorCode = (range = 0) => {
+  if (range <= 25) {
+    return "red";
+  } else if (range > 25 && range <= 50) {
+    return "orange";
+  } else if (range > 50 && range <= 75) {
+    return "#ffcc00";
+  } else if (range > 75) {
+    return "#339900";
+  } else {
+    return "#cc3300";
+  }
+};
+
+const circularProgressBarJS = (
+  urlRiskScore = 10,
+  percentageData = urlRiskScore <= 0
+    ? Math.min(100, 100 - urlRiskScore)
+    : Math.max(0, 100 - urlRiskScore),
+  progressColorData = "pink",
+  speedData = 20
+) => {
+  const circularProgress = document.querySelector(".circular-progress");
+
+  const progressValue = circularProgress.querySelector(".percentage");
+  const innerCircle = circularProgress.querySelector(".inner-circle");
+  let startValue = 0,
+    endValue = percentageData === 0 ? 1 : percentageData,
+    speed = speedData,
+    progressColor = progressColorData;
+
+  const progress = setInterval(() => {
+    startValue++;
+    progressValue.textContent = `${startValue}%`;
+    progressColor = circularProgressColorCode(startValue);
+    progressValue.style.color = `${progressColor}`;
+
+    innerCircle.style.backgroundColor = `${circularProgress.getAttribute(
+      "data-inner-circle-color"
+    )}`;
+
+    circularProgress.style.background = `conic-gradient(${progressColor} ${
+      startValue * 3.6
+    }deg,${circularProgress.getAttribute("data-bg-color")} 0deg)`;
+    if (startValue === endValue) {
+      clearInterval(progress);
+    }
+  }, speed);
 };
 
 const updatePageTableOnSearchResult = () => {
@@ -327,13 +377,23 @@ const updatePageTableOnSearchResult = () => {
   if (globalVariables.urlData?.success) {
     tableContainer.insertAdjacentHTML(
       "beforeend",
-      `<div>
+      `<div class="url-result-contents">
     <div
     class="url-result-meaning-container"
-  >
-  <i class="fa-solid fa-helmet-safety" style="color:${
-    globalVariables.urlDataColorCode?.color
-  }; font-size: 5rem; text-align:center;"></i>
+  >${
+    typeof globalVariables?.urlData?.risk_score === "number"
+      ? `<div
+        class="circular-progress"
+        data-inner-circle-color="white"
+        data-percentage="70"
+        data-progress-color="rebeccapurple"
+        data-bg-color="violet"
+      >
+        <div class="inner-circle"></div>
+        <p class="percentage">0%</p>
+      </div>`
+      : ``
+  }
 
     <span class="url-result-meaning-txt">
       ${
@@ -389,6 +449,9 @@ const updatePageTableOnSearchResult = () => {
     <div>${globalVariables.urlData?.message || "Error encountered"}</div>`
     );
   }
+
+  const riskScore = globalVariables?.urlData?.risk_score;
+  if (typeof riskScore === "number") circularProgressBarJS(riskScore);
 };
 
 if (globalVariables?.urlData && globalVariables?.urlDataColorCode) {
@@ -396,11 +459,16 @@ if (globalVariables?.urlData && globalVariables?.urlDataColorCode) {
 }
 
 const handleSubmit = async (e) => {
+  globalVariables.isLoadingSearchResult = true;
   const result = await verifyWebsite(
     globalVariables?.isLoadingSearchResult,
     globalVariables?.url,
     updateHTMLOnSearch
   );
+
+  console.log(globalVariables);
+  globalVariables.isLoadingSearchResult = false;
+
   globalVariables.urlData = result;
 
   updateHTMLOnSearch(globalVariables.isLoadingSearchResult);

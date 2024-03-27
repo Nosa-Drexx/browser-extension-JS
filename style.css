@@ -1,3 +1,13 @@
+/*Global variables*/
+
+:root {
+  --progress-bar-width: 200px;
+  --progress-bar-height: 200px;
+  --font-size: 2rem;
+}
+
+/* End of global variables */
+
 /* switch styles */
 .switch-btn {
   display: flex;
@@ -65,6 +75,11 @@ main {
 
 /*url Data Table*/
 .url-table-container {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
   margin-top: 3rem;
   text-align: center;
 }
@@ -72,7 +87,9 @@ main {
 .no-url-txt {
   text-align: center;
 }
-
+.url-result-contents {
+  width: 100%;
+}
 .url-loader-container {
   margin-top: 2rem;
 }
@@ -165,6 +182,8 @@ td {
   display: flex;
   justify-content: center;
   flex-flow: column nowrap;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 3rem;
 }
 .url-result-meaning-txt {
@@ -175,6 +194,12 @@ td {
   animation-name: spinner;
   animation-duration: 0.5s;
   animation-iteration-count: infinite;
+}
+
+:root {
+  --progress-bar-width: 200px;
+  --progress-bar-height: 200px;
+  --font-size: 2rem;
 }
 
 @keyframes spinner {
@@ -192,3 +217,112 @@ td {
   }
 }
 /*End field*/
+
+/*circular progress bar styles*/
+.circular-progress {
+  width: var(--progress-bar-width);
+  height: var(--progress-bar-height);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.inner-circle {
+  position: absolute;
+  width: calc(var(--progress-bar-width) - 30px);
+  height: calc(var(--progress-bar-height) - 30px);
+  border-radius: 50%;
+  background-color: lightgrey;
+}
+
+.percentage {
+  position: relative;
+  font-size: var(--font-size);
+  color: rgb(0, 0, 0, 0.8);
+}
+
+@media screen and (max-width: 800px) {
+  :root {
+    --progress-bar-width: 150px;
+    --progress-bar-height: 150px;
+    --font-size: 1.3rem;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  :root {
+    --progress-bar-width: 120px;
+    --progress-bar-height: 120px;
+    --font-size: 1rem;
+  }
+}
+/*End of circular progress bar styles*/
+
+/* css loader */
+.loader {
+  display: block;
+  width: 38px;
+  height: 38px;
+  position: relative;
+}
+.loader::before,
+.loader::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 38em;
+  height: 38em;
+  background-image: radial-gradient(
+      circle 10px,
+      rgb(107, 43, 226) 100%,
+      transparent 0
+    ),
+    radial-gradient(circle 10px, rgb(107, 43, 226) 100%, transparent 0),
+    radial-gradient(circle 10px, rgb(107, 43, 226) 100%, transparent 0),
+    radial-gradient(circle 10px, rgb(107, 43, 226) 100%, transparent 0),
+    radial-gradient(circle 10px, rgb(107, 43, 226) 100%, transparent 0),
+    radial-gradient(circle 10px, rgb(107, 43, 226) 100%, transparent 0),
+    radial-gradient(circle 10px, rgb(107, 43, 226) 100%, transparent 0),
+    radial-gradient(circle 10px, rgb(107, 43, 226) 100%, transparent 0);
+  background-position: 0em -13em, 0em 13em, 13em 0em, -13em 0em, 8em -8em,
+    -8em -8em, 8em 8em, -8em 8em;
+  background-repeat: no-repeat;
+  font-size: 0.5px;
+  border-radius: 50%;
+  animation: blast 1s ease-in infinite;
+}
+.loader::after {
+  font-size: 1px;
+  background: rgb(107, 43, 226);
+  animation: bounce 1s ease-in infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    font-size: 0.75px;
+  }
+  50% {
+    font-size: 1.5px;
+  }
+}
+@keyframes blast {
+  0%,
+  40% {
+    font-size: 0.5px;
+  }
+  70% {
+    opacity: 1;
+    font-size: 4px;
+  }
+  100% {
+    font-size: 6px;
+    opacity: 0;
+  }
+}
+
+/*End of css loader */
