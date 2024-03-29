@@ -501,9 +501,14 @@ const handleChromeMessage = async (message) => {
   const newData = await retrieveData(CHROME_STORAGE_KEY);
 
   globalVariables.loading = newData.loading;
-  if (!message.data.loading)
+  if (!message.data.loading) {
     globalVariables.baseURLResult = newData.baseURLResult;
+    globalVariables.urlData = newData.urlData;
+    globalVariables.urlDataColorCode = newData?.urlDataColorCode;
+  }
   updateHTML(globalVariables);
+  updatePageTableOnSearchResult();
+  urlInput.value = globalVariables?.urlData?.final_url || "";
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
