@@ -184,6 +184,7 @@ const securityTxt = document.querySelector(".nav-security-text");
 const currentURL = document.querySelector(".current-url");
 
 const updateHTML = (globalVariables) => {
+  console.log(globalVariables?.baseURLResult?.risk_score < 50, "test");
   if (fontAwesomeShieldIcon) {
     fontAwesomeShieldIcon.style.color =
       globalVariables.loading ||
@@ -192,7 +193,8 @@ const updateHTML = (globalVariables) => {
         ? "#7e7e81"
         : !globalVariables.baseURLResult?.success
         ? "red"
-        : !globalVariables.baseURLResult?.unsafe
+        : !globalVariables.baseURLResult?.unsafe &&
+          globalVariables?.baseURLResult?.risk_score < 50
         ? "green"
         : "red";
   }
@@ -203,7 +205,8 @@ const updateHTML = (globalVariables) => {
       ? "off"
       : !globalVariables.baseURLResult?.success
       ? "suspicious"
-      : !globalVariables.baseURLResult?.unsafe
+      : !globalVariables.baseURLResult?.unsafe &&
+        globalVariables?.baseURLResult?.risk_score < 50
       ? "safe"
       : "suspicious";
   }

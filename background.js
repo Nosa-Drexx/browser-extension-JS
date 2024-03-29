@@ -75,7 +75,7 @@ const urlStatusColorGen = (urlData, urlDataColorCode) => {
 /*End of utility functions*/
 
 const updateExtensionIcon = (data) => {
-  if (!data.unsafe) {
+  if (!data.unsafe && data?.risk_score < 50) {
     setBrowserIconUsingPath("/images/icon-128-safe.png"); // good url icon
   } else {
     setBrowserIconUsingPath("/images/icon-128-unsafe.png"); // bad url icon
