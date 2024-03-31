@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Phising Website Detector New",
+  "name": "Phising Website Detector",
   "version": "1.0.0",
   "description": "An extesion that helps to detect phising and mailicious website",
   "action": {

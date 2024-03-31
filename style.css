@@ -36,6 +36,8 @@ body {
 
 main {
   min-width: 348px;
+  width: 348px;
+  max-width: 348px;
   background: transparent;
   border-radius: 10px;
   padding: 10px;
@@ -66,6 +68,9 @@ body::-webkit-scrollbar-thumb {
   flex-flow: row nowrap;
   border: none;
   box-sizing: border-box;
+}
+.switch-btn:hover {
+  cursor: pointer;
 }
 
 .switch-btn-controller {
@@ -117,6 +122,7 @@ nav {
 .nav-toggle {
   display: flex;
   flex-flow: column nowrap;
+  gap: 0.5rem;
 }
 
 .extension-logo {
@@ -149,6 +155,10 @@ nav {
   justify-content: center;
   min-height: 220px;
   margin-top: 3rem;
+  text-align: center;
+}
+
+.fa-shield-virus {
   text-align: center;
 }
 
