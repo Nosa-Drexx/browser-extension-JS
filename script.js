@@ -215,7 +215,7 @@
       securityTxt.innerHTML = globalVariables.loading
         ? "checking..."
         : !globalVariables.baseURLResult || !globalVariables.switchState
-        ? "real-time check <br />off"
+        ? "real-time check is <br />off"
         : !globalVariables.baseURLResult?.success
         ? "curent tab is <br />suspicious"
         : !globalVariables.baseURLResult?.unsafe &&
