@@ -172,6 +172,7 @@
     isLoadingSearchResult: false,
     url: "",
     urlDataColorCode: null,
+    realTimeAlert: true,
   };
 
   let retrievePreData = await retrieveData(CHROME_STORAGE_KEY);
@@ -217,7 +218,7 @@
         : !globalVariables.baseURLResult || !globalVariables.switchState
         ? "real-time check is <br />off"
         : !globalVariables.baseURLResult?.success
-        ? "curent tab is <br />suspicious"
+        ? "an error has <br />occurred"
         : !globalVariables.baseURLResult?.unsafe &&
           globalVariables?.baseURLResult?.risk_score < 50
         ? "current tab is <br />safe"

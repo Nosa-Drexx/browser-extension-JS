@@ -116,8 +116,20 @@ const handleURLORTabUpdate = async (tabData, chromeStorageData) => {
       isLoadingSearchResult: false,
     });
     setTimeout(() => sendMessage("loading", { loading: false }), 500);
-
     updateExtensionIcon(result);
+
+    //call content script when result is a success
+    if (chromeStorageData?.realTimeAlert) {
+      await chrome.scripting.executeScript({
+        target: { tabId: tabData.id },
+        files: ["content.js", "content-script.css"],
+      });
+      setTimeout(
+        () =>
+          chrome.tabs.sendMessage(tabData.id, { action: "urlData", result }),
+        300
+      );
+    }
   }
 };
 
