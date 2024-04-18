@@ -406,3 +406,77 @@ td {
 }
 
 /*End of css loader */
+
+/*settings-screen*/
+.settings-container {
+  position: fixed;
+  display: flex;
+  flex-flow: column nowrap;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 99999;
+  background: var(--bg);
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.settings-container.hide {
+  display: none;
+}
+
+.settings-toggle {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.8rem;
+}
+
+.setting-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--bg);
+  color: var(--color);
+  font-size: 20px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.close-settings-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 24px;
+}
+.close-settings-btn {
+  color: var(--color);
+  font-size: 20px;
+  background: var(--bg);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+.settings-list {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  font-size: 16px;
+  color: var(--color);
+}
+.settings-switch-container {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+/*End of settings styles*/

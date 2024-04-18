@@ -63,7 +63,7 @@ if (typeof init === "undefined") {
         for (const property in styles) {
           div.style[property] = styles[property];
         }
-        console.log(div);
+        // console.log(div);
         div.appendChild(removeBtn);
 
         root.appendChild(div);

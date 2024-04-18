@@ -13,9 +13,16 @@
       <nav>
         <div class="nav">
           <div class="nav-toggle">
+            <div>
+              <button class="setting-screen">
+                <i class="fa-solid fa-gear"></i>
+              </button>
+            </div>
             <!-- switch -->
-            <button class="switch-btn">
-              <div class="switch-btn-controller"></div>
+            <button class="switch-btn real-time-scan-switch-btn">
+              <div
+                class="switch-btn-controller real-time-scan-switch-controller"
+              ></div>
             </button>
             <!-- end of switch -->
             <div>OFF | ON</div>
@@ -62,6 +69,36 @@
         <div class="no-url-txt">
           Perform a comprehensive URL analysis by scanning the provided link to
           gain detailed insights.
+        </div>
+      </div>
+      <div class="settings-container hide">
+        <div class="close-settings-container">
+          Settings
+          <button class="close-settings-btn">&#10005;</button>
+        </div>
+        <div class="settings-toggle">
+          <div class="settings-list real-time-scan">
+            <div>Real Time Scan</div>
+            <div class="settings-switch-container">
+              <button class="switch-btn real-time-scan-switch-btn">
+                <div
+                  class="switch-btn-controller real-time-scan-switch-controller"
+                ></div>
+              </button>
+              <div style="font-size: 10px">OFF | ON</div>
+            </div>
+          </div>
+          <div class="settings-list real-time-scan">
+            <div>Real Time Alert</div>
+            <div class="settings-switch-container">
+              <button class="switch-btn real-time-alert-switch-btn">
+                <div
+                  class="switch-btn-controller real-time-alert-switch-controller"
+                ></div>
+              </button>
+              <div style="font-size: 10px">OFF | ON</div>
+            </div>
+          </div>
         </div>
       </div>
     </main>

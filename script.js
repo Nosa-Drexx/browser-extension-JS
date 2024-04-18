@@ -269,26 +269,56 @@
       : `translateX(${animationDetails.left})`,
     transition: `transform ${animationSpeed}s`,
   };
-  const switchController = window.document.querySelector(
+  const switchController = window.document.querySelectorAll(
     ".switch-btn-controller"
   );
-  const switchBtn = window.document.querySelector(".switch-btn");
+  const switchBtn = window.document.querySelectorAll(".switch-btn");
 
-  if (switchController && switchBtn) {
+  const realTimeScanSwitchControllers = document.querySelectorAll(
+    ".real-time-scan-switch-controller"
+  );
+  const realTimeScanSwithBtns = document.querySelectorAll(
+    ".real-time-scan-switch-btn"
+  );
+  const realTimeAlertSwitchControllers = document.querySelectorAll(
+    ".real-time-alert-switch-controller"
+  );
+  const realTimeAlertSwithBtns = document.querySelectorAll(
+    ".real-time-alert-switch-btn"
+  );
+
+  if (switchController[0] && switchBtn[0]) {
+    switchBtn.forEach((switchBtn) => {
+      switchBtn.style.width = switchBtnStyle.width;
+      switchBtn.style.height = switchBtnStyle.height;
+      switchBtn.style.padding = switchBtnStyle.padding;
+      switchBtn.style.background = switchBtnStyle.background;
+      switchBtn.style.borderRadius = switchBtnStyle.borderRadius;
+      switchBtn.style.transition = switchBtnStyle.transition;
+    });
     // give swtich btn initail style
-    switchBtn.style.width = switchBtnStyle.width;
-    switchBtn.style.height = switchBtnStyle.height;
-    switchBtn.style.padding = switchBtnStyle.padding;
-    switchBtn.style.background = switchBtnStyle.background;
-    switchBtn.style.borderRadius = switchBtnStyle.borderRadius;
-    switchBtn.style.transition = switchBtnStyle.transition;
 
     // give switch controller initial style
-    switchController.style.width = switchControllerStyle.width;
-    switchController.style.height = switchControllerStyle.height;
-    switchController.style.background = switchControllerStyle.background;
-    switchController.style.transform = switchControllerStyle.transform;
-    switchController.style.transition = switchControllerStyle.transition;
+    switchController.forEach((switchController) => {
+      switchController.style.width = switchControllerStyle.width;
+      switchController.style.height = switchControllerStyle.height;
+      switchController.style.background = switchControllerStyle.background;
+      switchController.style.transform = switchControllerStyle.transform;
+      switchController.style.transition = switchControllerStyle.transition;
+    });
+
+    //For alerts
+    realTimeAlertSwithBtns.forEach((realTimeAlertSwithBtn) => {
+      realTimeAlertSwithBtn.style.background = globalVariables?.realTimeAlert
+        ? toggleOnbg
+        : toggleOffbg;
+    });
+    realTimeAlertSwitchControllers.forEach((realTimeAlertSwitchController) => {
+      realTimeAlertSwitchController.style.transform =
+        globalVariables?.realTimeAlert
+          ? `translateX(${animationDetails.right})`
+          : `translateX(${animationDetails.left})`;
+    });
   }
 
   const handleSwitch = () => {
@@ -299,12 +329,28 @@
     globalVariables.switchState = !globalVariables.switchState; //updated switch value
 
     //upated styles based on switch values
-    if (globalVariables.switchState && switchController && switchBtn) {
-      switchBtn.style.background = toggleOnbg;
-      switchController.style.transform = `translateX(${animationDetails.right})`;
-    } else if (!globalVariables.switchState && switchController && switchBtn) {
-      switchBtn.style.background = toggleOffbg;
-      switchController.style.transform = `translateX(${animationDetails.left})`;
+    if (
+      globalVariables.switchState &&
+      realTimeScanSwitchControllers[0] &&
+      realTimeScanSwithBtns[0]
+    ) {
+      realTimeScanSwithBtns.forEach((realTimeScanSwithBtn) => {
+        realTimeScanSwithBtn.style.background = toggleOnbg;
+      });
+      realTimeScanSwitchControllers.forEach((realTimeScanSwitchController) => {
+        realTimeScanSwitchController.style.transform = `translateX(${animationDetails.right})`;
+      });
+    } else if (
+      !globalVariables.switchState &&
+      realTimeScanSwitchControllers[0] &&
+      realTimeScanSwithBtns[0]
+    ) {
+      realTimeScanSwithBtns.forEach((realTimeScanSwithBtn) => {
+        realTimeScanSwithBtn.style.background = toggleOffbg;
+      });
+      realTimeScanSwitchControllers.forEach((realTimeScanSwitchController) => {
+        realTimeScanSwitchController.style.transform = `translateX(${animationDetails.left})`;
+      });
     }
     if (!globalVariables.switchState) {
       updateHTML(globalVariables);
@@ -312,7 +358,45 @@
     }
   };
 
-  switchBtn.addEventListener("click", handleSwitch);
+  const handleRealTimeAlert = () => {
+    globalVariables.realTimeAlert = !globalVariables.realTimeAlert; //updated switch value
+
+    if (
+      globalVariables.realTimeAlert &&
+      realTimeAlertSwitchControllers[0] &&
+      realTimeAlertSwithBtns[0]
+    ) {
+      realTimeAlertSwithBtns.forEach((realTimeAlertSwithBtn) => {
+        realTimeAlertSwithBtn.style.background = toggleOnbg;
+      });
+      realTimeAlertSwitchControllers.forEach(
+        (realTimeAlertSwitchController) => {
+          realTimeAlertSwitchController.style.transform = `translateX(${animationDetails.right})`;
+        }
+      );
+    } else if (
+      !globalVariables.realTimeAlert &&
+      realTimeAlertSwitchControllers[0] &&
+      realTimeAlertSwithBtns[0]
+    ) {
+      realTimeAlertSwithBtns.forEach((realTimeScanSwithBtn) => {
+        realTimeScanSwithBtn.style.background = toggleOffbg;
+      });
+      realTimeAlertSwitchControllers.forEach(
+        (realTimeAlertSwitchController) => {
+          realTimeAlertSwitchController.style.transform = `translateX(${animationDetails.left})`;
+        }
+      );
+    }
+  };
+
+  realTimeScanSwithBtns.forEach((realTimeScanSwithBtn) => {
+    realTimeScanSwithBtn.addEventListener("click", handleSwitch);
+  });
+
+  realTimeAlertSwithBtns.forEach((realTimeAlertSwithBtn) => {
+    realTimeAlertSwithBtn.addEventListener("click", handleRealTimeAlert);
+  });
   /*End of switch */
 
   /*Input form  and table layout*/
@@ -533,4 +617,22 @@
       handleChromeMessage(message);
     }
   });
+
+  /*settings screen */
+  // const settingContainer = document.createElement("div");
+  // settingContainer.classList.add("settings-container");
+  // const main = document.querySelector("main");
+  const settingsContainer = document.querySelector(".settings-container");
+  const showSettingBtn = document.querySelector(".setting-screen");
+  const hideSettingBtn = document.querySelector(".close-settings-btn");
+  if (showSettingBtn) {
+    showSettingBtn.addEventListener("click", () => {
+      settingsContainer.classList.remove("hide");
+    });
+  }
+  if (hideSettingBtn) {
+    hideSettingBtn.addEventListener("click", () => {
+      settingsContainer.classList.add("hide");
+    });
+  }
 })();
