@@ -22,6 +22,10 @@ yarn-error.log*
 .env*.local
 .env*
 .env
+
+#ignore server contents
 /server/.env*.local
 /server/.env*
 /server/.env
+/server/node_modules
+
