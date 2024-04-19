@@ -2,9 +2,8 @@ if (typeof init === "undefined") {
   const init = (() => {
     const listener = (request, sender, sendResponse) => {
       if (request.action === "urlData") {
-        // console.log(request);
         const isSafe =
-          request?.result?.unsafe && request?.result?.risk_score < 50
+          !request?.result?.unsafe && request?.result?.risk_score < 50
             ? true
             : false;
 
