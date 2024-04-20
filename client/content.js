@@ -1,21 +1,21 @@
 if (typeof init === "undefined") {
   const init = (() => {
-    const listener = (request, sender, sendResponse) => {
+    const listener = async (request, sender, sendResponse) => {
       if (request.action === "urlData") {
         const isSafe =
           !request?.result?.unsafe && request?.result?.risk_score < 50
             ? true
             : false;
-
         //create host element aand attach shadow to prevent style scoping (effect of styles form other pages)
         const hostElement = document.createElement("div");
         const root = hostElement.attachShadow({ mode: "open" });
 
         const div = document.createElement("div");
         const removeBtn = document.createElement("button");
-        const audio = new Audio(chrome.runtime.getURL("notification.mp3"));
+        const audio = await new Audio(
+          chrome.runtime.getURL("notification.mp3")
+        );
 
-        // console.log(audio);
         removeBtn.onclick = () => {
           div.remove();
         };
@@ -70,12 +70,18 @@ if (typeof init === "undefined") {
         //slide in div and wait for 3 seconds before sliding out then removing itself
         setTimeout(() => {
           div.style.right = "10px";
-          audio.play();
           setTimeout(() => {
             div.style.right = "-100%";
-            // setTimeout(() => div?.remove(), 0);
+            setTimeout(() => div?.remove(), 10);
           }, 4000);
         }, 0);
+        if (audio.paused || audio.ended) {
+          try {
+            await audio?.play();
+          } catch (error) {
+            console.error(error);
+          }
+        }
       }
       chrome.runtime.onMessage.removeListener(listener); //prevent memory leak
     };

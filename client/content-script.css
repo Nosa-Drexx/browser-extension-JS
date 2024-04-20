@@ -1,5 +1,5 @@
-.real-time-alert {
-  /* position: fixed;
+/* .real-time-alert {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -8,10 +8,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2rem; */
+  font-size: 2rem;
 }
 
 .real-time-alert.safe {
   background-color: #d4edda;
   color: #215924;
-}
+} */

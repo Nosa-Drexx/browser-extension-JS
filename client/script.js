@@ -1,7 +1,7 @@
 /*Utillity fucntions*/
 (async function runscript() {
   const CHROME_STORAGE_KEY = "url-extension-states";
-  const BASE_API = "http://localhost:5000/api/proxy";
+  const BASE_API = "https://browser-extension-js.onrender.com/api";
 
   const REQUESTSTRICTNESS = 1;
   const REQUESTURL = BASE_API;
@@ -23,7 +23,7 @@
       });
       const result = await response.json();
 
-      // console.log(result);
+      console.log(result);
 
       if (typeof loading === "boolean") loading = false;
       return result;

@@ -2,7 +2,7 @@ const CHROME_STORAGE_KEY = "url-extension-states";
 
 /*Utillity fucntions*/
 
-const BASE_API = "http://localhost:5000/api/proxy";
+const BASE_API = "https://browser-extension-js.onrender.com/api";
 
 const REQUESTSTRICTNESS = 1;
 const REQUESTURL = BASE_API;
@@ -17,6 +17,16 @@ const verifyWebsite = async (
   beforeRequest = () => {}
 ) => {
   try {
+    const previousData = globalServiceWorkerVariable?.previousURLData;
+    const previousDataExpiresAt =
+      globalServiceWorkerVariable?.previousURLData?.expiresAt;
+
+    if (previousDataExpiresAt && Date.now() > previousDataExpiresAt) {
+      delete globalServiceWorkerVariable.previousURLData;
+    }
+    if (previousData && previousData[url]) {
+      return globalServiceWorkerVariable.previousURLData[url];
+    }
     if (typeof loading === "boolean") loading = true;
     beforeRequest(loading);
     const response = await fetch(`${REQUESTURL}/${REQUESTSTRICTNESS}`, {
@@ -29,6 +39,20 @@ const verifyWebsite = async (
     const result = await response.json();
 
     if (typeof loading === "boolean") loading = false;
+
+    if (!previousData) {
+      const createdDate = Date.now();
+      console.log("creating new cache", createdDate);
+      globalServiceWorkerVariable.previousURLData = {
+        createdAt: createdDate,
+        expiresAt: createdDate + 24 * 60 * 60 * 1000,
+        [url]: result,
+      }; //expires at 24 hrs after creation
+      // console.log("created new cache", globalServiceWorkerVariable);
+    } else {
+      globalServiceWorkerVariable.previousURLData[url] = result;
+      // console.log("adding to cache", globalServiceWorkerVariable);
+    }
     return result;
   } catch (error) {
     if (typeof loading === "boolean") loading = false;
